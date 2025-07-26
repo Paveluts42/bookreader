@@ -1,0 +1,32 @@
+syntax = "proto3";
+package reader;
+option go_package = "github.com/Paveluts42/bookreader/backend/api";
+
+message UploadRequest {
+  string book_id = 1;
+  bytes chunk = 2;
+}
+
+message UploadResponse {
+  string book_id = 1;
+  bool ok = 2;
+}
+
+message GetPDFRequest { string book_id = 1; }
+message GetPDFChunk { bytes chunk = 1; }
+
+message Note { string id =1; string book_id=2; int32 page=3; string text=4; }
+message NoteResponse { bool ok =1; string note_id=2; }
+message ListNotesRequest { string book_id =1; }
+
+message ReadingPosition { string book_id =1; int32 current_page=2; }
+message PositionResponse { bool ok =1; }
+
+service ReaderService {
+  rpc UploadPDF(stream UploadRequest) returns (UploadResponse);
+  rpc GetPDF(GetPDFRequest) returns (stream GetPDFChunk);
+  rpc SaveNote(Note) returns (NoteResponse);
+  rpc ListNotes(ListNotesRequest) returns (stream Note);
+  rpc SavePosition(ReadingPosition) returns (PositionResponse);
+  rpc GetPosition(GetPDFRequest) returns (ReadingPosition);
+}

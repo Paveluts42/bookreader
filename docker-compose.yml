@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: reader
+      POSTGRES_PASSWORD: readerpass
+      POSTGRES_DB: readerdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "postgres://reader:readerpass@postgres:5432/readerdb?sslmode=disable"
+    ports:
+      - "50051:50051"
+
+  envoy:
+    image: envoyproxy/envoy:v1.29.0
+    depends_on:
+      - backend
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

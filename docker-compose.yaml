@@ -1,0 +1,26 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: reader
+      POSTGRES_PASSWORD: readerpass
+      POSTGRES_DB: readerdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    ports:
+      - "50051:50051"
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: "postgres://reader:readerpass@postgres:5432/readerdb"
+
+volumes:
+  pgdata:

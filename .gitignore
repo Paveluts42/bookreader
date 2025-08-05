@@ -17,7 +17,7 @@ Thumbs.db
 
 # директории зависимостей
 vendor/
-
+uploads/
 # ===== React / Node (frontend) =====
 # зависимости и билд
 node_modules/

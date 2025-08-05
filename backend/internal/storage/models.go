@@ -1,24 +1,37 @@
 package storage
 
-import _ "gorm.io/gorm"
+import (
+	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type Book struct {
-    ID       string `gorm:"primaryKey"`
-    FilePath string
+	ID       uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	FilePath string
+	Title    string
+	Author   string
+	CreateAt time.Time
+
+	Notes     []Note     `gorm:"foreignKey:BookID"`
+	Positions []Position `gorm:"foreignKey:BookID"`
 }
 
 type Note struct {
-    ID     string `gorm:"primaryKey"`
-    BookID string
-    Page   int
-    Text   string
+	ID     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	BookID uuid.UUID `gorm:"type:uuid"`
+	Page   int
+	Text   string
 }
 
 type Position struct {
-    BookID      string `gorm:"primaryKey"`
-    CurrentPage int
+	ID          uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	BookID      uuid.UUID `gorm:"type:uuid"`
+	CurrentPage int
 }
 
-func AutoMigrate() {
+func AutoMigrate(DB *gorm.DB) {
+    DB.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
     DB.AutoMigrate(&Book{}, &Note{}, &Position{})
 }

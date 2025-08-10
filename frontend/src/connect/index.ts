@@ -4,7 +4,7 @@ import { ReaderService } from "../api/reader_pb";
 
 
 const transport = createGrpcWebTransport({
-  baseUrl: "http://localhost:50051",
+  baseUrl:  "http://127.0.0.1:50051",
   useBinaryFormat:false
 });
 

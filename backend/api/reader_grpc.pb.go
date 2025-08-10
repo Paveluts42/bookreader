@@ -19,26 +19,26 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ReaderService_UploadPDF_FullMethodName    = "/api.ReaderService/UploadPDF"
-	ReaderService_GetPDF_FullMethodName       = "/api.ReaderService/GetPDF"
-	ReaderService_SaveNote_FullMethodName     = "/api.ReaderService/SaveNote"
-	ReaderService_ListNotes_FullMethodName    = "/api.ReaderService/ListNotes"
-	ReaderService_SavePosition_FullMethodName = "/api.ReaderService/SavePosition"
-	ReaderService_GetPosition_FullMethodName  = "/api.ReaderService/GetPosition"
-	ReaderService_GetBooks_FullMethodName     = "/api.ReaderService/GetBooks"
+	ReaderService_AddNote_FullMethodName        = "/api.ReaderService/AddNote"
+	ReaderService_GetNotes_FullMethodName       = "/api.ReaderService/GetNotes"
+	ReaderService_DeleteBook_FullMethodName     = "/api.ReaderService/DeleteBook"
+	ReaderService_UploadPDF_FullMethodName      = "/api.ReaderService/UploadPDF"
+	ReaderService_UpdateBookPage_FullMethodName = "/api.ReaderService/UpdateBookPage"
+	ReaderService_GetBooks_FullMethodName       = "/api.ReaderService/GetBooks"
+	ReaderService_GetBook_FullMethodName        = "/api.ReaderService/GetBook"
 )
 
 // ReaderServiceClient is the client API for ReaderService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ReaderServiceClient interface {
+	AddNote(ctx context.Context, in *AddNoteRequest, opts ...grpc.CallOption) (*AddNoteResponse, error)
+	GetNotes(ctx context.Context, in *GetNotesRequest, opts ...grpc.CallOption) (*GetNotesResponse, error)
+	DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*DeleteBookResponse, error)
 	UploadPDF(ctx context.Context, in *UploadRequest, opts ...grpc.CallOption) (*UploadResponse, error)
-	GetPDF(ctx context.Context, in *GetPDFRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[GetPDFChunk], error)
-	SaveNote(ctx context.Context, in *Note, opts ...grpc.CallOption) (*NoteResponse, error)
-	ListNotes(ctx context.Context, in *ListNotesRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Note], error)
-	SavePosition(ctx context.Context, in *ReadingPosition, opts ...grpc.CallOption) (*PositionResponse, error)
-	GetPosition(ctx context.Context, in *GetPDFRequest, opts ...grpc.CallOption) (*ReadingPosition, error)
+	UpdateBookPage(ctx context.Context, in *UpdateBookPageRequest, opts ...grpc.CallOption) (*UpdateBookPageResponse, error)
 	GetBooks(ctx context.Context, in *GetBooksRequest, opts ...grpc.CallOption) (*GetBooksResponse, error)
+	GetBook(ctx context.Context, in *GetBookRequest, opts ...grpc.CallOption) (*GetBookResponse, error)
 }
 
 type readerServiceClient struct {
@@ -47,6 +47,36 @@ type readerServiceClient struct {
 
 func NewReaderServiceClient(cc grpc.ClientConnInterface) ReaderServiceClient {
 	return &readerServiceClient{cc}
+}
+
+func (c *readerServiceClient) AddNote(ctx context.Context, in *AddNoteRequest, opts ...grpc.CallOption) (*AddNoteResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddNoteResponse)
+	err := c.cc.Invoke(ctx, ReaderService_AddNote_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *readerServiceClient) GetNotes(ctx context.Context, in *GetNotesRequest, opts ...grpc.CallOption) (*GetNotesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetNotesResponse)
+	err := c.cc.Invoke(ctx, ReaderService_GetNotes_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *readerServiceClient) DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*DeleteBookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteBookResponse)
+	err := c.cc.Invoke(ctx, ReaderService_DeleteBook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *readerServiceClient) UploadPDF(ctx context.Context, in *UploadRequest, opts ...grpc.CallOption) (*UploadResponse, error) {
@@ -59,68 +89,10 @@ func (c *readerServiceClient) UploadPDF(ctx context.Context, in *UploadRequest, 
 	return out, nil
 }
 
-func (c *readerServiceClient) GetPDF(ctx context.Context, in *GetPDFRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[GetPDFChunk], error) {
+func (c *readerServiceClient) UpdateBookPage(ctx context.Context, in *UpdateBookPageRequest, opts ...grpc.CallOption) (*UpdateBookPageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ReaderService_ServiceDesc.Streams[0], ReaderService_GetPDF_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[GetPDFRequest, GetPDFChunk]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ReaderService_GetPDFClient = grpc.ServerStreamingClient[GetPDFChunk]
-
-func (c *readerServiceClient) SaveNote(ctx context.Context, in *Note, opts ...grpc.CallOption) (*NoteResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(NoteResponse)
-	err := c.cc.Invoke(ctx, ReaderService_SaveNote_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *readerServiceClient) ListNotes(ctx context.Context, in *ListNotesRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Note], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &ReaderService_ServiceDesc.Streams[1], ReaderService_ListNotes_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[ListNotesRequest, Note]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ReaderService_ListNotesClient = grpc.ServerStreamingClient[Note]
-
-func (c *readerServiceClient) SavePosition(ctx context.Context, in *ReadingPosition, opts ...grpc.CallOption) (*PositionResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(PositionResponse)
-	err := c.cc.Invoke(ctx, ReaderService_SavePosition_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *readerServiceClient) GetPosition(ctx context.Context, in *GetPDFRequest, opts ...grpc.CallOption) (*ReadingPosition, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ReadingPosition)
-	err := c.cc.Invoke(ctx, ReaderService_GetPosition_FullMethodName, in, out, cOpts...)
+	out := new(UpdateBookPageResponse)
+	err := c.cc.Invoke(ctx, ReaderService_UpdateBookPage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,17 +109,27 @@ func (c *readerServiceClient) GetBooks(ctx context.Context, in *GetBooksRequest,
 	return out, nil
 }
 
+func (c *readerServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opts ...grpc.CallOption) (*GetBookResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetBookResponse)
+	err := c.cc.Invoke(ctx, ReaderService_GetBook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReaderServiceServer is the server API for ReaderService service.
 // All implementations must embed UnimplementedReaderServiceServer
 // for forward compatibility.
 type ReaderServiceServer interface {
+	AddNote(context.Context, *AddNoteRequest) (*AddNoteResponse, error)
+	GetNotes(context.Context, *GetNotesRequest) (*GetNotesResponse, error)
+	DeleteBook(context.Context, *DeleteBookRequest) (*DeleteBookResponse, error)
 	UploadPDF(context.Context, *UploadRequest) (*UploadResponse, error)
-	GetPDF(*GetPDFRequest, grpc.ServerStreamingServer[GetPDFChunk]) error
-	SaveNote(context.Context, *Note) (*NoteResponse, error)
-	ListNotes(*ListNotesRequest, grpc.ServerStreamingServer[Note]) error
-	SavePosition(context.Context, *ReadingPosition) (*PositionResponse, error)
-	GetPosition(context.Context, *GetPDFRequest) (*ReadingPosition, error)
+	UpdateBookPage(context.Context, *UpdateBookPageRequest) (*UpdateBookPageResponse, error)
 	GetBooks(context.Context, *GetBooksRequest) (*GetBooksResponse, error)
+	GetBook(context.Context, *GetBookRequest) (*GetBookResponse, error)
 	mustEmbedUnimplementedReaderServiceServer()
 }
 
@@ -158,26 +140,26 @@ type ReaderServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedReaderServiceServer struct{}
 
+func (UnimplementedReaderServiceServer) AddNote(context.Context, *AddNoteRequest) (*AddNoteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddNote not implemented")
+}
+func (UnimplementedReaderServiceServer) GetNotes(context.Context, *GetNotesRequest) (*GetNotesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetNotes not implemented")
+}
+func (UnimplementedReaderServiceServer) DeleteBook(context.Context, *DeleteBookRequest) (*DeleteBookResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteBook not implemented")
+}
 func (UnimplementedReaderServiceServer) UploadPDF(context.Context, *UploadRequest) (*UploadResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadPDF not implemented")
 }
-func (UnimplementedReaderServiceServer) GetPDF(*GetPDFRequest, grpc.ServerStreamingServer[GetPDFChunk]) error {
-	return status.Errorf(codes.Unimplemented, "method GetPDF not implemented")
-}
-func (UnimplementedReaderServiceServer) SaveNote(context.Context, *Note) (*NoteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SaveNote not implemented")
-}
-func (UnimplementedReaderServiceServer) ListNotes(*ListNotesRequest, grpc.ServerStreamingServer[Note]) error {
-	return status.Errorf(codes.Unimplemented, "method ListNotes not implemented")
-}
-func (UnimplementedReaderServiceServer) SavePosition(context.Context, *ReadingPosition) (*PositionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SavePosition not implemented")
-}
-func (UnimplementedReaderServiceServer) GetPosition(context.Context, *GetPDFRequest) (*ReadingPosition, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPosition not implemented")
+func (UnimplementedReaderServiceServer) UpdateBookPage(context.Context, *UpdateBookPageRequest) (*UpdateBookPageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBookPage not implemented")
 }
 func (UnimplementedReaderServiceServer) GetBooks(context.Context, *GetBooksRequest) (*GetBooksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBooks not implemented")
+}
+func (UnimplementedReaderServiceServer) GetBook(context.Context, *GetBookRequest) (*GetBookResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBook not implemented")
 }
 func (UnimplementedReaderServiceServer) mustEmbedUnimplementedReaderServiceServer() {}
 func (UnimplementedReaderServiceServer) testEmbeddedByValue()                       {}
@@ -200,6 +182,60 @@ func RegisterReaderServiceServer(s grpc.ServiceRegistrar, srv ReaderServiceServe
 	s.RegisterService(&ReaderService_ServiceDesc, srv)
 }
 
+func _ReaderService_AddNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddNoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReaderServiceServer).AddNote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReaderService_AddNote_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReaderServiceServer).AddNote(ctx, req.(*AddNoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReaderService_GetNotes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetNotesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReaderServiceServer).GetNotes(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReaderService_GetNotes_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReaderServiceServer).GetNotes(ctx, req.(*GetNotesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReaderService_DeleteBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteBookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReaderServiceServer).DeleteBook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReaderService_DeleteBook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReaderServiceServer).DeleteBook(ctx, req.(*DeleteBookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ReaderService_UploadPDF_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UploadRequest)
 	if err := dec(in); err != nil {
@@ -218,78 +254,20 @@ func _ReaderService_UploadPDF_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ReaderService_GetPDF_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GetPDFRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(ReaderServiceServer).GetPDF(m, &grpc.GenericServerStream[GetPDFRequest, GetPDFChunk]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ReaderService_GetPDFServer = grpc.ServerStreamingServer[GetPDFChunk]
-
-func _ReaderService_SaveNote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Note)
+func _ReaderService_UpdateBookPage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateBookPageRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ReaderServiceServer).SaveNote(ctx, in)
+		return srv.(ReaderServiceServer).UpdateBookPage(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ReaderService_SaveNote_FullMethodName,
+		FullMethod: ReaderService_UpdateBookPage_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReaderServiceServer).SaveNote(ctx, req.(*Note))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ReaderService_ListNotes_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ListNotesRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(ReaderServiceServer).ListNotes(m, &grpc.GenericServerStream[ListNotesRequest, Note]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type ReaderService_ListNotesServer = grpc.ServerStreamingServer[Note]
-
-func _ReaderService_SavePosition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReadingPosition)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReaderServiceServer).SavePosition(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ReaderService_SavePosition_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReaderServiceServer).SavePosition(ctx, req.(*ReadingPosition))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ReaderService_GetPosition_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPDFRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ReaderServiceServer).GetPosition(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ReaderService_GetPosition_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ReaderServiceServer).GetPosition(ctx, req.(*GetPDFRequest))
+		return srv.(ReaderServiceServer).UpdateBookPage(ctx, req.(*UpdateBookPageRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -312,6 +290,24 @@ func _ReaderService_GetBooks_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReaderService_GetBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReaderServiceServer).GetBook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReaderService_GetBook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReaderServiceServer).GetBook(ctx, req.(*GetBookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ReaderService_ServiceDesc is the grpc.ServiceDesc for ReaderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -320,37 +316,34 @@ var ReaderService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ReaderServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "AddNote",
+			Handler:    _ReaderService_AddNote_Handler,
+		},
+		{
+			MethodName: "GetNotes",
+			Handler:    _ReaderService_GetNotes_Handler,
+		},
+		{
+			MethodName: "DeleteBook",
+			Handler:    _ReaderService_DeleteBook_Handler,
+		},
+		{
 			MethodName: "UploadPDF",
 			Handler:    _ReaderService_UploadPDF_Handler,
 		},
 		{
-			MethodName: "SaveNote",
-			Handler:    _ReaderService_SaveNote_Handler,
-		},
-		{
-			MethodName: "SavePosition",
-			Handler:    _ReaderService_SavePosition_Handler,
-		},
-		{
-			MethodName: "GetPosition",
-			Handler:    _ReaderService_GetPosition_Handler,
+			MethodName: "UpdateBookPage",
+			Handler:    _ReaderService_UpdateBookPage_Handler,
 		},
 		{
 			MethodName: "GetBooks",
 			Handler:    _ReaderService_GetBooks_Handler,
 		},
-	},
-	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "GetPDF",
-			Handler:       _ReaderService_GetPDF_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "ListNotes",
-			Handler:       _ReaderService_ListNotes_Handler,
-			ServerStreams: true,
+			MethodName: "GetBook",
+			Handler:    _ReaderService_GetBook_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "api/reader.proto",
 }

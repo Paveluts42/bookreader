@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file reader.proto.
  */
 export const file_reader: GenFile = /*@__PURE__*/
-  fileDesc("CgxyZWFkZXIucHJvdG8SA2FwaSIvCg1VcGxvYWRSZXF1ZXN0Eg8KB2Jvb2tfaWQYASABKAkSDQoFY2h1bmsYAiABKAwiMQoEQm9vaxIKCgJpZBgBIAEoCRINCgV0aXRsZRgCIAEoCRIOCgZhdXRob3IYAyABKAkiEQoPR2V0Qm9va3NSZXF1ZXN0IiwKEEdldEJvb2tzUmVzcG9uc2USGAoFYm9va3MYASADKAsyCS5hcGkuQm9vayItCg5VcGxvYWRSZXNwb25zZRIPCgdib29rX2lkGAEgASgJEgoKAm9rGAIgASgIIiAKDUdldFBERlJlcXVlc3QSDwoHYm9va19pZBgBIAEoCSIcCgtHZXRQREZDaHVuaxINCgVjaHVuaxgBIAEoDCI/CgROb3RlEgoKAmlkGAEgASgJEg8KB2Jvb2tfaWQYAiABKAkSDAoEcGFnZRgDIAEoBRIMCgR0ZXh0GAQgASgJIisKDE5vdGVSZXNwb25zZRIKCgJvaxgBIAEoCBIPCgdub3RlX2lkGAIgASgJIiMKEExpc3ROb3Rlc1JlcXVlc3QSDwoHYm9va19pZBgBIAEoCSI4Cg9SZWFkaW5nUG9zaXRpb24SDwoHYm9va19pZBgBIAEoCRIUCgxjdXJyZW50X3BhZ2UYAiABKAUiHgoQUG9zaXRpb25SZXNwb25zZRIKCgJvaxgBIAEoCDKBAwoNUmVhZGVyU2VydmljZRI0CglVcGxvYWRQREYSEi5hcGkuVXBsb2FkUmVxdWVzdBoTLmFwaS5VcGxvYWRSZXNwb25zZRIwCgZHZXRQREYSEi5hcGkuR2V0UERGUmVxdWVzdBoQLmFwaS5HZXRQREZDaHVuazABEigKCFNhdmVOb3RlEgkuYXBpLk5vdGUaES5hcGkuTm90ZVJlc3BvbnNlEi8KCUxpc3ROb3RlcxIVLmFwaS5MaXN0Tm90ZXNSZXF1ZXN0GgkuYXBpLk5vdGUwARI7CgxTYXZlUG9zaXRpb24SFC5hcGkuUmVhZGluZ1Bvc2l0aW9uGhUuYXBpLlBvc2l0aW9uUmVzcG9uc2USNwoLR2V0UG9zaXRpb24SEi5hcGkuR2V0UERGUmVxdWVzdBoULmFwaS5SZWFkaW5nUG9zaXRpb24SNwoIR2V0Qm9va3MSFC5hcGkuR2V0Qm9va3NSZXF1ZXN0GhUuYXBpLkdldEJvb2tzUmVzcG9uc2VCLlosZ2l0aHViLmNvbS9QYXZlbHV0czQyL2Jvb2tyZWFkZXIvYmFja2VuZC9hcGliBnByb3RvMw");
+  fileDesc("CgxyZWFkZXIucHJvdG8SA2FwaSJOCg1VcGxvYWRSZXF1ZXN0Eg8KB2Jvb2tfaWQYASABKAkSDQoFY2h1bmsYAiABKAwSDQoFdGl0bGUYAyABKAkSDgoGYXV0aG9yGAQgASgJIpABCgRCb29rEgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEg4KBmF1dGhvchgDIAEoCRIRCglmaWxlX3BhdGgYBCABKAkSEQoJY292ZXJfdXJsGAUgASgJEgwKBHBhZ2UYBiABKAUSDwoHcGFnZUFsbBgHIAEoBRIYCgVub3RlcxgIIAMoCzIJLmFwaS5Ob3RlIhEKD0dldEJvb2tzUmVxdWVzdCIsChBHZXRCb29rc1Jlc3BvbnNlEhgKBWJvb2tzGAEgAygLMgkuYXBpLkJvb2siLQoOVXBsb2FkUmVzcG9uc2USDwoHYm9va19pZBgBIAEoCRIKCgJvaxgCIAEoCCIkChFEZWxldGVCb29rUmVxdWVzdBIPCgdib29rX2lkGAEgASgJIiAKEkRlbGV0ZUJvb2tSZXNwb25zZRIKCgJvaxgBIAEoCCIhCg5HZXRCb29rUmVxdWVzdBIPCgdib29rX2lkGAEgASgJIjkKD0dldEJvb2tSZXNwb25zZRIXCgRib29rGAEgASgLMgkuYXBpLkJvb2sSDQoFZXJyb3IYAiABKAkiNgoVVXBkYXRlQm9va1BhZ2VSZXF1ZXN0Eg8KB2Jvb2tfaWQYASABKAkSDAoEcGFnZRgCIAEoBSIkChZVcGRhdGVCb29rUGFnZVJlc3BvbnNlEgoKAm9rGAEgASgIIj8KBE5vdGUSCgoCaWQYASABKAkSDwoHYm9va19pZBgCIAEoCRIMCgRwYWdlGAMgASgFEgwKBHRleHQYBCABKAkiKwoMTm90ZVJlc3BvbnNlEgoKAm9rGAEgASgIEg8KB25vdGVfaWQYAiABKAkiIwoQTGlzdE5vdGVzUmVxdWVzdBIPCgdib29rX2lkGAEgASgJIjgKD1JlYWRpbmdQb3NpdGlvbhIPCgdib29rX2lkGAEgASgJEhQKDGN1cnJlbnRfcGFnZRgCIAEoBSIeChBQb3NpdGlvblJlc3BvbnNlEgoKAm9rGAEgASgIIiIKD0dldE5vdGVzUmVxdWVzdBIPCgdib29rX2lkGAEgASgJIiwKEEdldE5vdGVzUmVzcG9uc2USGAoFbm90ZXMYASADKAsyCS5hcGkuTm90ZSI9Cg5hZGROb3RlUmVxdWVzdBIPCgdib29rX2lkGAEgASgJEgwKBHBhZ2UYAiABKAUSDAoEdGV4dBgDIAEoCSIuCg9hZGROb3RlUmVzcG9uc2USCgoCb2sYASABKAgSDwoHbm90ZV9pZBgCIAEoCTKtAwoNUmVhZGVyU2VydmljZRI0CgdBZGROb3RlEhMuYXBpLmFkZE5vdGVSZXF1ZXN0GhQuYXBpLmFkZE5vdGVSZXNwb25zZRI3CghHZXROb3RlcxIULmFwaS5HZXROb3Rlc1JlcXVlc3QaFS5hcGkuR2V0Tm90ZXNSZXNwb25zZRI9CgpEZWxldGVCb29rEhYuYXBpLkRlbGV0ZUJvb2tSZXF1ZXN0GhcuYXBpLkRlbGV0ZUJvb2tSZXNwb25zZRI0CglVcGxvYWRQREYSEi5hcGkuVXBsb2FkUmVxdWVzdBoTLmFwaS5VcGxvYWRSZXNwb25zZRJJCg5VcGRhdGVCb29rUGFnZRIaLmFwaS5VcGRhdGVCb29rUGFnZVJlcXVlc3QaGy5hcGkuVXBkYXRlQm9va1BhZ2VSZXNwb25zZRI3CghHZXRCb29rcxIULmFwaS5HZXRCb29rc1JlcXVlc3QaFS5hcGkuR2V0Qm9va3NSZXNwb25zZRI0CgdHZXRCb29rEhMuYXBpLkdldEJvb2tSZXF1ZXN0GhQuYXBpLkdldEJvb2tSZXNwb25zZUIuWixnaXRodWIuY29tL1BhdmVsdXRzNDIvYm9va3JlYWRlci9iYWNrZW5kL2FwaWIGcHJvdG8z");
 
 /**
  * @generated from message api.UploadRequest
@@ -25,6 +25,16 @@ export type UploadRequest = Message<"api.UploadRequest"> & {
    * @generated from field: bytes chunk = 2;
    */
   chunk: Uint8Array;
+
+  /**
+   * @generated from field: string title = 3;
+   */
+  title: string;
+
+  /**
+   * @generated from field: string author = 4;
+   */
+  author: string;
 };
 
 /**
@@ -52,6 +62,33 @@ export type Book = Message<"api.Book"> & {
    * @generated from field: string author = 3;
    */
   author: string;
+
+  /**
+   * @generated from field: string file_path = 4;
+   */
+  filePath: string;
+
+  /**
+   * @generated from field: string cover_url = 5;
+   */
+  coverUrl: string;
+
+  /**
+   * @generated from field: int32 page = 6;
+   */
+  page: number;
+
+  /**
+   * @generated from field: int32 pageAll = 7;
+   */
+  pageAll: number;
+
+  /**
+   * List of notes associated with the book
+   *
+   * @generated from field: repeated api.Note notes = 8;
+   */
+  notes: Note[];
 };
 
 /**
@@ -114,9 +151,9 @@ export const UploadResponseSchema: GenMessage<UploadResponse> = /*@__PURE__*/
   messageDesc(file_reader, 4);
 
 /**
- * @generated from message api.GetPDFRequest
+ * @generated from message api.DeleteBookRequest
  */
-export type GetPDFRequest = Message<"api.GetPDFRequest"> & {
+export type DeleteBookRequest = Message<"api.DeleteBookRequest"> & {
   /**
    * @generated from field: string book_id = 1;
    */
@@ -124,28 +161,108 @@ export type GetPDFRequest = Message<"api.GetPDFRequest"> & {
 };
 
 /**
- * Describes the message api.GetPDFRequest.
- * Use `create(GetPDFRequestSchema)` to create a new message.
+ * Describes the message api.DeleteBookRequest.
+ * Use `create(DeleteBookRequestSchema)` to create a new message.
  */
-export const GetPDFRequestSchema: GenMessage<GetPDFRequest> = /*@__PURE__*/
+export const DeleteBookRequestSchema: GenMessage<DeleteBookRequest> = /*@__PURE__*/
   messageDesc(file_reader, 5);
 
 /**
- * @generated from message api.GetPDFChunk
+ * @generated from message api.DeleteBookResponse
  */
-export type GetPDFChunk = Message<"api.GetPDFChunk"> & {
+export type DeleteBookResponse = Message<"api.DeleteBookResponse"> & {
   /**
-   * @generated from field: bytes chunk = 1;
+   * @generated from field: bool ok = 1;
    */
-  chunk: Uint8Array;
+  ok: boolean;
 };
 
 /**
- * Describes the message api.GetPDFChunk.
- * Use `create(GetPDFChunkSchema)` to create a new message.
+ * Describes the message api.DeleteBookResponse.
+ * Use `create(DeleteBookResponseSchema)` to create a new message.
  */
-export const GetPDFChunkSchema: GenMessage<GetPDFChunk> = /*@__PURE__*/
+export const DeleteBookResponseSchema: GenMessage<DeleteBookResponse> = /*@__PURE__*/
   messageDesc(file_reader, 6);
+
+/**
+ * @generated from message api.GetBookRequest
+ */
+export type GetBookRequest = Message<"api.GetBookRequest"> & {
+  /**
+   * @generated from field: string book_id = 1;
+   */
+  bookId: string;
+};
+
+/**
+ * Describes the message api.GetBookRequest.
+ * Use `create(GetBookRequestSchema)` to create a new message.
+ */
+export const GetBookRequestSchema: GenMessage<GetBookRequest> = /*@__PURE__*/
+  messageDesc(file_reader, 7);
+
+/**
+ * @generated from message api.GetBookResponse
+ */
+export type GetBookResponse = Message<"api.GetBookResponse"> & {
+  /**
+   * @generated from field: api.Book book = 1;
+   */
+  book?: Book;
+
+  /**
+   * Error message if book not found
+   *
+   * @generated from field: string error = 2;
+   */
+  error: string;
+};
+
+/**
+ * Describes the message api.GetBookResponse.
+ * Use `create(GetBookResponseSchema)` to create a new message.
+ */
+export const GetBookResponseSchema: GenMessage<GetBookResponse> = /*@__PURE__*/
+  messageDesc(file_reader, 8);
+
+/**
+ * @generated from message api.UpdateBookPageRequest
+ */
+export type UpdateBookPageRequest = Message<"api.UpdateBookPageRequest"> & {
+  /**
+   * @generated from field: string book_id = 1;
+   */
+  bookId: string;
+
+  /**
+   * @generated from field: int32 page = 2;
+   */
+  page: number;
+};
+
+/**
+ * Describes the message api.UpdateBookPageRequest.
+ * Use `create(UpdateBookPageRequestSchema)` to create a new message.
+ */
+export const UpdateBookPageRequestSchema: GenMessage<UpdateBookPageRequest> = /*@__PURE__*/
+  messageDesc(file_reader, 9);
+
+/**
+ * @generated from message api.UpdateBookPageResponse
+ */
+export type UpdateBookPageResponse = Message<"api.UpdateBookPageResponse"> & {
+  /**
+   * @generated from field: bool ok = 1;
+   */
+  ok: boolean;
+};
+
+/**
+ * Describes the message api.UpdateBookPageResponse.
+ * Use `create(UpdateBookPageResponseSchema)` to create a new message.
+ */
+export const UpdateBookPageResponseSchema: GenMessage<UpdateBookPageResponse> = /*@__PURE__*/
+  messageDesc(file_reader, 10);
 
 /**
  * @generated from message api.Note
@@ -177,7 +294,7 @@ export type Note = Message<"api.Note"> & {
  * Use `create(NoteSchema)` to create a new message.
  */
 export const NoteSchema: GenMessage<Note> = /*@__PURE__*/
-  messageDesc(file_reader, 7);
+  messageDesc(file_reader, 11);
 
 /**
  * @generated from message api.NoteResponse
@@ -199,7 +316,7 @@ export type NoteResponse = Message<"api.NoteResponse"> & {
  * Use `create(NoteResponseSchema)` to create a new message.
  */
 export const NoteResponseSchema: GenMessage<NoteResponse> = /*@__PURE__*/
-  messageDesc(file_reader, 8);
+  messageDesc(file_reader, 12);
 
 /**
  * @generated from message api.ListNotesRequest
@@ -216,7 +333,7 @@ export type ListNotesRequest = Message<"api.ListNotesRequest"> & {
  * Use `create(ListNotesRequestSchema)` to create a new message.
  */
 export const ListNotesRequestSchema: GenMessage<ListNotesRequest> = /*@__PURE__*/
-  messageDesc(file_reader, 9);
+  messageDesc(file_reader, 13);
 
 /**
  * @generated from message api.ReadingPosition
@@ -238,7 +355,7 @@ export type ReadingPosition = Message<"api.ReadingPosition"> & {
  * Use `create(ReadingPositionSchema)` to create a new message.
  */
 export const ReadingPositionSchema: GenMessage<ReadingPosition> = /*@__PURE__*/
-  messageDesc(file_reader, 10);
+  messageDesc(file_reader, 14);
 
 /**
  * @generated from message api.PositionResponse
@@ -255,12 +372,121 @@ export type PositionResponse = Message<"api.PositionResponse"> & {
  * Use `create(PositionResponseSchema)` to create a new message.
  */
 export const PositionResponseSchema: GenMessage<PositionResponse> = /*@__PURE__*/
-  messageDesc(file_reader, 11);
+  messageDesc(file_reader, 15);
+
+/**
+ * @generated from message api.GetNotesRequest
+ */
+export type GetNotesRequest = Message<"api.GetNotesRequest"> & {
+  /**
+   * @generated from field: string book_id = 1;
+   */
+  bookId: string;
+};
+
+/**
+ * Describes the message api.GetNotesRequest.
+ * Use `create(GetNotesRequestSchema)` to create a new message.
+ */
+export const GetNotesRequestSchema: GenMessage<GetNotesRequest> = /*@__PURE__*/
+  messageDesc(file_reader, 16);
+
+/**
+ * @generated from message api.GetNotesResponse
+ */
+export type GetNotesResponse = Message<"api.GetNotesResponse"> & {
+  /**
+   * @generated from field: repeated api.Note notes = 1;
+   */
+  notes: Note[];
+};
+
+/**
+ * Describes the message api.GetNotesResponse.
+ * Use `create(GetNotesResponseSchema)` to create a new message.
+ */
+export const GetNotesResponseSchema: GenMessage<GetNotesResponse> = /*@__PURE__*/
+  messageDesc(file_reader, 17);
+
+/**
+ * @generated from message api.addNoteRequest
+ */
+export type addNoteRequest = Message<"api.addNoteRequest"> & {
+  /**
+   * @generated from field: string book_id = 1;
+   */
+  bookId: string;
+
+  /**
+   * @generated from field: int32 page = 2;
+   */
+  page: number;
+
+  /**
+   * @generated from field: string text = 3;
+   */
+  text: string;
+};
+
+/**
+ * Describes the message api.addNoteRequest.
+ * Use `create(addNoteRequestSchema)` to create a new message.
+ */
+export const addNoteRequestSchema: GenMessage<addNoteRequest> = /*@__PURE__*/
+  messageDesc(file_reader, 18);
+
+/**
+ * @generated from message api.addNoteResponse
+ */
+export type addNoteResponse = Message<"api.addNoteResponse"> & {
+  /**
+   * @generated from field: bool ok = 1;
+   */
+  ok: boolean;
+
+  /**
+   * ID of the newly created note
+   *
+   * @generated from field: string note_id = 2;
+   */
+  noteId: string;
+};
+
+/**
+ * Describes the message api.addNoteResponse.
+ * Use `create(addNoteResponseSchema)` to create a new message.
+ */
+export const addNoteResponseSchema: GenMessage<addNoteResponse> = /*@__PURE__*/
+  messageDesc(file_reader, 19);
 
 /**
  * @generated from service api.ReaderService
  */
 export const ReaderService: GenService<{
+  /**
+   * @generated from rpc api.ReaderService.AddNote
+   */
+  addNote: {
+    methodKind: "unary";
+    input: typeof addNoteRequestSchema;
+    output: typeof addNoteResponseSchema;
+  },
+  /**
+   * @generated from rpc api.ReaderService.GetNotes
+   */
+  getNotes: {
+    methodKind: "unary";
+    input: typeof GetNotesRequestSchema;
+    output: typeof GetNotesResponseSchema;
+  },
+  /**
+   * @generated from rpc api.ReaderService.DeleteBook
+   */
+  deleteBook: {
+    methodKind: "unary";
+    input: typeof DeleteBookRequestSchema;
+    output: typeof DeleteBookResponseSchema;
+  },
   /**
    * @generated from rpc api.ReaderService.UploadPDF
    */
@@ -270,44 +496,12 @@ export const ReaderService: GenService<{
     output: typeof UploadResponseSchema;
   },
   /**
-   * @generated from rpc api.ReaderService.GetPDF
+   * @generated from rpc api.ReaderService.UpdateBookPage
    */
-  getPDF: {
-    methodKind: "server_streaming";
-    input: typeof GetPDFRequestSchema;
-    output: typeof GetPDFChunkSchema;
-  },
-  /**
-   * @generated from rpc api.ReaderService.SaveNote
-   */
-  saveNote: {
+  updateBookPage: {
     methodKind: "unary";
-    input: typeof NoteSchema;
-    output: typeof NoteResponseSchema;
-  },
-  /**
-   * @generated from rpc api.ReaderService.ListNotes
-   */
-  listNotes: {
-    methodKind: "server_streaming";
-    input: typeof ListNotesRequestSchema;
-    output: typeof NoteSchema;
-  },
-  /**
-   * @generated from rpc api.ReaderService.SavePosition
-   */
-  savePosition: {
-    methodKind: "unary";
-    input: typeof ReadingPositionSchema;
-    output: typeof PositionResponseSchema;
-  },
-  /**
-   * @generated from rpc api.ReaderService.GetPosition
-   */
-  getPosition: {
-    methodKind: "unary";
-    input: typeof GetPDFRequestSchema;
-    output: typeof ReadingPositionSchema;
+    input: typeof UpdateBookPageRequestSchema;
+    output: typeof UpdateBookPageResponseSchema;
   },
   /**
    * @generated from rpc api.ReaderService.GetBooks
@@ -316,6 +510,14 @@ export const ReaderService: GenService<{
     methodKind: "unary";
     input: typeof GetBooksRequestSchema;
     output: typeof GetBooksResponseSchema;
+  },
+  /**
+   * @generated from rpc api.ReaderService.GetBook
+   */
+  getBook: {
+    methodKind: "unary";
+    input: typeof GetBookRequestSchema;
+    output: typeof GetBookResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_reader, 0);

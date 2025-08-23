@@ -1,16 +1,19 @@
 package cors
 
 import (
-    "github.com/rs/cors"
-    "net/http"
+	"net/http"
+
+	connectcors "connectrpc.com/cors"
+	"github.com/rs/cors"
 )
 
-func New() func(http.Handler) http.Handler {
-    c := cors.New(cors.Options{
-        AllowedOrigins:   []string{"http://localhost:5173"},
-        AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-        AllowedHeaders:   []string{"*"},
-        AllowCredentials: true,
-    })
-    return c.Handler
+// WithCORS adds CORS support to a Connect HTTP handler.
+func WithCORS(h http.Handler) http.Handler {
+	middleware := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:5173"},
+		AllowedMethods: connectcors.AllowedMethods(),
+        AllowedHeaders: append(connectcors.AllowedHeaders(), "Authorization"),
+        ExposedHeaders: append(connectcors.ExposedHeaders(), "Authorization"),
+	})
+	return middleware.Handler(h)
 }

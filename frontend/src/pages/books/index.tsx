@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { client } from "../../connect";
+import { bookClient } from "../../connect";
 import {
   Typography,
   Grid,
@@ -18,8 +18,9 @@ export default function BooksList() {
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [selectedBookId, setSelectedBookId] = useState<string | null>(null);
   const fetchBooks = async () => {
-    const res = await client.getBooks({});
-    setBooks(res.books);
+    const res = await bookClient.getBooks({});
+    console.log(res.books);
+    setBooks(res.books || []);
   };
   useEffect(() => {
     fetchBooks();
@@ -42,7 +43,7 @@ export default function BooksList() {
   };
   const handleDelete = async () => {
     if (selectedBookId) {
-      await client.deleteBook({ bookId: selectedBookId });
+      await bookClient.deleteBook({ bookId: selectedBookId });
       fetchBooks();
       setBooks((prev) => prev.filter((b) => b.id !== selectedBookId));
     }

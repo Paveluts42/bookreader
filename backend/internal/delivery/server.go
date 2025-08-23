@@ -5,7 +5,9 @@ import (
 )
 
 type Server struct {
-	apiconnect.UnimplementedReaderServiceHandler
+	apiconnect.BookServiceHandler
+	apiconnect.NoteServiceHandler
+	apiconnect.UserServiceHandler
 }
 
 func NewServer() *Server {

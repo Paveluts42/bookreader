@@ -5,9 +5,9 @@ import (
 	"errors"
 	"log"
 
-
 	"connectrpc.com/connect"
 	"github.com/Paveluts42/bookreader/backend/api"
+	"github.com/Paveluts42/bookreader/backend/internal/shared"
 	"github.com/Paveluts42/bookreader/backend/internal/storage"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -39,31 +39,36 @@ func (s *Server) AddNote(
 
 
 func (s *Server) GetNotes(
-	ctx context.Context,
-	req *connect.Request[api.GetNotesRequest],
+    ctx context.Context,
+    req *connect.Request[api.GetNotesRequest],
 ) (*connect.Response[api.GetNotesResponse], error) {
-	log.Println("🔥 GetNotes from CONNECT MAIN.go")
-	var book storage.Book
-	if err := storage.DB.Preload("Notes").First(&book, "id = ?", req.Msg.BookId).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, err)
-		}
-		log.Printf("DB error: %v", err)
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
 
-	apiNotes := make([]*api.Note, len(book.Notes))
-	for i, n := range book.Notes {
-		apiNotes[i] = &api.Note{
-			Id:     n.ID.String(),
-			Text:   n.Text,
-			Page:   int32(n.Page),
-			BookId: n.BookID.String(),
-		}
-	}
+    userID, err := shared.ValidateAccessToken(req)
+    if err != nil {
+        return nil, connect.NewError(connect.CodePermissionDenied, errors.New("forbidden"))
+    }
 
-	resp := &api.GetNotesResponse{Notes: apiNotes}
-	return connect.NewResponse(resp), nil
+    var notes []storage.Note
+    if err := storage.DB.Where("book_id = ? AND user_id = ?", req.Msg.BookId, userID).Find(&notes).Error; err != nil {
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return nil, connect.NewError(connect.CodeNotFound, err)
+        }
+        log.Printf("DB error: %v", err)
+        return nil, connect.NewError(connect.CodeInternal, err)
+    }
+
+    apiNotes := make([]*api.Note, len(notes))
+    for i, n := range notes {
+        apiNotes[i] = &api.Note{
+            Id:     n.ID.String(),
+            Text:   n.Text,
+            Page:   int32(n.Page),
+            BookId: n.BookID.String(),
+            UserId: n.UserID.String(),
+        }
+    }
+
+    resp := &api.GetNotesResponse{Notes: apiNotes}
+    return connect.NewResponse(resp), nil
 }
-
 

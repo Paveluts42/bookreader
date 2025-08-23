@@ -5,8 +5,10 @@ import (
 	"errors"
 	"log"
 	"os"
+
 	"connectrpc.com/connect"
 	"github.com/Paveluts42/bookreader/backend/api"
+	"github.com/Paveluts42/bookreader/backend/internal/shared"
 	"github.com/Paveluts42/bookreader/backend/internal/storage"
 	"gorm.io/gorm"
 )
@@ -16,13 +18,39 @@ func (s *Server) GetBooks(
 	req *connect.Request[api.GetBooksRequest],
 ) (*connect.Response[api.GetBooksResponse], error) {
 
-	var books []storage.Book
-	if err := storage.DB.Find(&books).Error; err != nil {
-		log.Printf("DB error: %v", err)
-		return nil, connect.NewError(connect.CodeInternal, err)
+	userID, err := shared.ValidateAccessToken(req)
+
+
+	if err != nil {
+		log.Println("Error:", err.Error())
+		return nil, connect.NewError(connect.CodePermissionDenied, err)
+	}
+	if userID == "" {
+		log.Println("Error: userID is empty")
+		return nil, connect.NewError(connect.CodePermissionDenied, errors.New("userID is empty"))
 	}
 
-	// Convert to API response
+    var books []storage.Book
+    var user storage.User
+    if err := storage.DB.First(&user, "id = ?", userID).Error; err != nil {
+        log.Printf("DB error: %v", err)
+        return nil, connect.NewError(connect.CodeInternal, err)
+    }
+
+    if user.IsAdmin {
+        // Админ получает все книги
+        if err := storage.DB.Find(&books).Error; err != nil {
+            log.Printf("DB error: %v", err)
+            return nil, connect.NewError(connect.CodeInternal, err)
+        }
+    } else {
+        // Обычный пользователь — только свои
+        if err := storage.DB.Where("user_id = ?", userID).Find(&books).Error; err != nil {
+            log.Printf("DB error: %v", err)
+            return nil, connect.NewError(connect.CodeInternal, err)
+        }
+    }
+
 	resp := &api.GetBooksResponse{
 		Books: make([]*api.Book, 0, len(books)),
 	}
@@ -33,41 +61,59 @@ func (s *Server) GetBooks(
 			Author:   b.Author,
 			FilePath: b.FilePath,
 			CoverUrl: b.CoverPath,
+			UserId: b.UserID.String(),
 			Page:     int32(b.Page),
 			PageAll:  int32(b.PageAll),
 		})
-		println(int32(b.Page))
-
 	}
+
 	return connect.NewResponse(resp), nil
 }
 
 func (s *Server) GetBook(
-	ctx context.Context,
-	req *connect.Request[api.GetBookRequest],
+    ctx context.Context,
+    req *connect.Request[api.GetBookRequest],
 ) (*connect.Response[api.GetBookResponse], error) {
-	var book storage.Book
-	if err := storage.DB.First(&book, "id = ?", req.Msg.BookId).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, connect.NewError(connect.CodeNotFound, err)
-		}
-		log.Printf("DB error: %v", err)
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
+
+    userID, err := shared.ValidateAccessToken(req)
+    if err != nil {
+        return nil, connect.NewError(connect.CodePermissionDenied, errors.New("forbidden"))
+    }
+
+    var user storage.User
+    if err := storage.DB.First(&user, "id = ?", userID).Error; err != nil {
+        return nil, connect.NewError(connect.CodeInternal, err)
+    }
+
+    var book storage.Book
+    if user.IsAdmin {
+        err = storage.DB.First(&book, "id = ?", req.Msg.BookId).Error
+    } else {
+        err = storage.DB.Where("id = ? AND user_id = ?", req.Msg.BookId, userID).First(&book).Error
+    }
+
+    if err != nil {
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return nil, connect.NewError(connect.CodeNotFound, err)
+        }
+        log.Printf("DB error: %v", err)
+        return nil, connect.NewError(connect.CodeInternal, err)
+    }
 
 
-	resp := &api.GetBookResponse{
-		Book: &api.Book{
-			Id:       book.ID.String(),
-			Title:    book.Title,
-			Author:   book.Author,
-			FilePath: book.FilePath,
-			CoverUrl: book.CoverPath,
-			Page:     int32(book.Page),
-			PageAll:  int32(book.PageAll),
-		},
-	}
-	return connect.NewResponse(resp), nil
+    bookResp := &api.Book{
+        Id:       book.ID.String(),
+        Title:    book.Title,
+        Author:   book.Author,
+        FilePath: book.FilePath,
+        CoverUrl: book.CoverPath,
+        Page:     int32(book.Page),
+        PageAll:  int32(book.PageAll),
+    }
+    resp := &api.GetBookResponse{
+        Book: bookResp,
+    }
+    return connect.NewResponse(resp), nil
 }
 
 func (s *Server) DeleteBook(

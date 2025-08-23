@@ -13,7 +13,7 @@
     "@buf/connectrpc_eliza.bufbuild_es": "^2.6.2-20230913231627-233fca715f49.1",
     "@bufbuild/protobuf": "^2.6.3",
     "@connectrpc/connect": "^2.0.3",
-    "@connectrpc/connect-web": "^2.0.3",
+    "@connectrpc/connect-web": "^2.0.4",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.1",
@@ -23,7 +23,8 @@
     "react-dom": "^19.1.0",
     "react-pdf": "^10.0.1",
     "react-router-dom": "^7.8.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@bufbuild/buf": "^1.56.0",

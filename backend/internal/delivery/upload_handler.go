@@ -14,17 +14,23 @@ import (
 	"github.com/google/uuid"
 )
 
-
 func (s *Server) UploadPDF(
 	ctx context.Context,
 	req *connect.Request[api.UploadRequest],
 ) (*connect.Response[api.UploadResponse], error) {
+
+    userID, err := shared.ValidateAccessToken(req)
+	println("UserID:", userID)
+    if err != nil || userID == "" {
+        return nil, connect.NewError(connect.CodePermissionDenied, errors.New("forbidden"))
+    }
+
 	if req.Msg.BookId == "" || len(req.Msg.Chunk) == 0 {
 		log.Println("Invalid upload request")
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid upload request"))
 	}
 
-	title := req.Msg.Title 
+	title := req.Msg.Title
 	author := req.Msg.Author
 
 	bookID := req.Msg.BookId
@@ -59,6 +65,7 @@ func (s *Server) UploadPDF(
 		PageAll:   int32(pageCount),
 		FilePath:  filePath,
 		CoverPath: coverPath,
+		UserID:    uuid.MustParse(userID),
 		CreatedAt: time.Now(),
 	}
 	if err := storage.DB.Create(&book).Error; err != nil {

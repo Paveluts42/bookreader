@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { client } from "../../connect";
+import { bookClient, noteClient } from "../../connect";
 import {
   Typography,
   Paper,
@@ -15,6 +15,7 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  LinearProgress,
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -48,12 +49,12 @@ export default function ReaderPage() {
   const goToNextPage = () => {
     setPageNumber((prev) => {
       const nextPage = Math.min(prev + 1, numPages);
-      client.updateBookPage({ bookId, page: nextPage });
+      bookClient.updateBookPage({ bookId, page: nextPage });
       return nextPage;
     });
   };
   const [inputPage, setInputPage] = useState<number | string>("");
-const [notes, setNotes] = useState<any[]>([]);
+  const [notes, setNotes] = useState<any[]>([]);
   useEffect(() => {
     setInputPage(pageNumber); // Sync input with current page
   }, [pageNumber]);
@@ -67,7 +68,7 @@ const [notes, setNotes] = useState<any[]>([]);
     if (isNaN(page) || page < 1) page = 1;
     if (page > numPages) page = numPages;
     setPageNumber(page);
-    client.updateBookPage({ bookId, page });
+    bookClient.updateBookPage({ bookId, page });
   };
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -80,15 +81,15 @@ const [notes, setNotes] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchBook = async () => {
-      const res = await client.getBook({ bookId });
+      const res = await bookClient.getBook({ bookId });
       setBook(res.book);
-      const notes = await client.getNotes({ bookId });
+      const notes = await noteClient.getNotes({ bookId });
       setNotes(notes.notes || []);
-      setPageNumber(
-        res.book && typeof res.book.page === "number" && !isNaN(res.book.page)
+      const initialPage =
+        res.book && typeof res.book.page === "number" && res.book.page > 0
           ? res.book.page
-          : 1
-      );
+          : 1;
+      setPageNumber(initialPage);
     };
     fetchBook();
   }, [bookId]);
@@ -201,6 +202,22 @@ const [notes, setNotes] = useState<any[]>([]);
             <ArrowForwardIosIcon fontSize="inherit" />
           </IconButton>
         </Stack>
+        <Box sx={{ width: "100%", mt: 2 }}>
+          <LinearProgress
+            variant="determinate"
+            value={numPages > 0 ? (pageNumber / numPages) * 100 : 0}
+            sx={{ height: 8, borderRadius: 4, width: "50%", margin: "0 auto" }}
+          />
+          <Typography
+            variant="caption"
+            display="block"
+            align="center"
+            sx={{ mt: 0.5 }}
+          >
+            Прогресс:{" "}
+            {numPages > 0 ? Math.round((pageNumber / numPages) * 100) : 0}%
+          </Typography>
+        </Box>
         <Stack direction="row" justifyContent="center" sx={{ mt: 2 }}>
           <TextField
             fullWidth
@@ -242,11 +259,11 @@ const [notes, setNotes] = useState<any[]>([]);
           }
         >
           <MenuItem
-            onClick={() => {
-              setNoteDialog({
-                open: true,
-                text: contextMenu!.text,
+            onClick={async () => {
+              await noteClient.addNote({
+                bookId,
                 page: contextMenu!.page,
+                text: contextMenu!.text,
               });
               setContextMenu(null);
             }}
@@ -285,15 +302,16 @@ const [notes, setNotes] = useState<any[]>([]);
             </Button>
             <Button
               onClick={async () => {
-                await client.addNote({
+                await noteClient.addNote({
                   bookId,
                   page: noteDialog.page,
                   text: noteInput || noteDialog.text,
                 });
+                await noteClient.getNotes({ bookId });
                 setNoteDialog({ ...noteDialog, open: false });
                 setNoteInput("");
                 // Refresh book/notes
-                const res = await client.getBook({ bookId });
+                const res = await bookClient.getBook({ bookId });
                 setBook(res.book);
               }}
               disabled={!noteInput && !noteDialog.text}
@@ -314,7 +332,19 @@ const [notes, setNotes] = useState<any[]>([]);
           </Typography>
           {notes.length > 0 ? (
             notes.map((note) => (
-              <Paper key={note.id} sx={{ p: 2, mb: 2 }}>
+              <Paper
+                key={note.id}
+                onClick={() => {
+                  setPageNumber(note.page);
+                  setInputPage(note.page);
+                }}
+                sx={{
+                  p: 2,
+                  mb: 2,
+                  cursor: "pointer",
+                  "&:hover": { backgroundColor: "action.hover" },
+                }}
+              >
                 <Typography variant="body1">{note.text}</Typography>
                 <Typography variant="body2" color="text.secondary">
                   Страница: {note.page}

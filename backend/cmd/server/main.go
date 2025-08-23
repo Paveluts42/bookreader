@@ -16,12 +16,16 @@ func main() {
 	mux := http.NewServeMux()
 
 	server := delivery.NewServer()
-	path, handler := apiconnect.NewReaderServiceHandler(server)
+	bookPath, bookHandler := apiconnect.NewBookServiceHandler(server)
+	notePath, noteHandler := apiconnect.NewNoteServiceHandler(server)
+	userPath, userHandler := apiconnect.NewUserServiceHandler(server)
 
-	mux.Handle(path, handler)
-	mux.Handle("/uploads/", corsmw.New()(http.StripPrefix("/uploads/", http.FileServer(http.Dir("/uploads")))))
+	mux.Handle(bookPath, bookHandler)
+	mux.Handle(notePath, noteHandler)
+	mux.Handle(userPath, userHandler)
+	mux.Handle("/uploads/", corsmw.WithCORS(http.StripPrefix("/uploads/", http.FileServer(http.Dir("/uploads")))))
 	// Add CORS middleware
-	handlerWithCORS := corsmw.New()(mux)
+	handlerWithCORS := corsmw.WithCORS(mux)
 	log.Println("🚀 Starting CONNECT server on :50051")
 	if err := http.ListenAndServe(":50051", handlerWithCORS); err != nil {
 		log.Fatal(err)

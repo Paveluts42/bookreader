@@ -15,11 +15,18 @@ Thumbs.db
 *.test
 *.out
 
+
+
 # директории зависимостей
 vendor/
 uploads/
 # ===== React / Node (frontend) =====
 # зависимости и билд
+
+backend/api/*.pb.go
+backend/api/*.connect.go
+backend/api/*_grpc.pb.go
+frontend/src/api/*.ts
 node_modules/
 build/
 dist/

@@ -3,6 +3,7 @@ import { createGrpcWebTransport } from "@connectrpc/connect-web";
 import { BookService } from "../api/book_pb";
 import { NoteService } from "../api/note_pb";
 import { UserService } from "../api/user_pb";
+import { BookmarkService } from "../api/bookmarks_pb";
 
 let isRefreshing = false;
 
@@ -88,6 +89,7 @@ const transport = createGrpcWebTransport({
   ],
 });
 
+export const bookmarkClient = createClient(BookmarkService, transport);
 export const bookClient = createClient(BookService, transport);
 export const noteClient = createClient(NoteService, transport);
 export const userClient = createClient(UserService, transport);

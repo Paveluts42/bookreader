@@ -1,0 +1,46 @@
+syntax = "proto3";
+package api;
+option go_package = "github.com/Paveluts42/bookreader/backend/api";
+
+
+message Bookmark {
+  string id = 1;
+  string book_id = 2;
+  string user_id = 3;
+  int32 page = 4;
+  string note = 5;
+}
+
+message AddBookmarkRequest {
+  string book_id = 1;
+  int32 page = 2;
+  string note = 3;
+}
+
+message AddBookmarkResponse {
+  bool ok = 1;
+  Bookmark bookmark = 2;
+}
+
+message GetBookmarksRequest {
+  string book_id = 1;
+}
+
+message GetBookmarksResponse {
+  repeated Bookmark bookmarks = 1;
+}
+
+message DeleteBookmarkRequest {
+  string bookmark_id = 1;
+}
+
+message DeleteBookmarkResponse {
+  bool ok = 1;
+}
+
+
+service BookmarkService {
+  rpc DeleteBookmark(DeleteBookmarkRequest) returns (DeleteBookmarkResponse);
+  rpc AddBookmark(AddBookmarkRequest) returns (AddBookmarkResponse);
+  rpc GetBookmarks(GetBookmarksRequest) returns (GetBookmarksResponse);
+}

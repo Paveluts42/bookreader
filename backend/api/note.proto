@@ -24,8 +24,15 @@ message GetNotesRequest {
 message GetNotesResponse {
   repeated Note notes = 1;
 }
+message DeleteNoteRequest {
+  string note_id = 1;
+}
+message DeleteNoteResponse {
+  bool ok = 1;
+}
 
 service NoteService {
+  rpc DeleteNote(DeleteNoteRequest) returns (DeleteNoteResponse); 
   rpc AddNote(AddNoteRequest) returns (AddNoteResponse);
   rpc GetNotes(GetNotesRequest) returns (GetNotesResponse);
 }

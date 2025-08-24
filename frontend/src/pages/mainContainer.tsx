@@ -24,8 +24,6 @@ const MainContainer = () => {
     const userId = localStorage.getItem("user");
     if (userId) {
       try {
-        const usersRest= await userClient.getUsers( {} );
-        console.log("Ответ от getUsers:", usersRest);
        const userRes= await userClient.getUser( { userId: userId } ); 
          setUser(userRes);
       } catch (error) {

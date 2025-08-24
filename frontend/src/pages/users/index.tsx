@@ -5,7 +5,7 @@ import { userClient } from "../../connect";
 
 export default function AdminUsersPage() {
   const { user } = useAuthStore();
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
@@ -19,8 +19,12 @@ export default function AdminUsersPage() {
     }
   };
 
+    useEffect(() => {
+    fetchUsers();
+  }, []);
+
   const handleDelete = async (userId: string) => {
-    if (userId === user.userId) return;
+    if (userId === user?.userId) return;
     if (!window.confirm("Удалить пользователя?")) return;
     try {
       await userClient.deleteUser({ userId });
@@ -30,9 +34,6 @@ export default function AdminUsersPage() {
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   if (!user?.isAdmin) return <Typography>Нет доступа</Typography>;
 

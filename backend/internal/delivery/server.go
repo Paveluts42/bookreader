@@ -8,6 +8,7 @@ type Server struct {
 	apiconnect.BookServiceHandler
 	apiconnect.NoteServiceHandler
 	apiconnect.UserServiceHandler
+	apiconnect.BookmarkServiceClient
 }
 
 func NewServer() *Server {

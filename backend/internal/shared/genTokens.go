@@ -6,7 +6,7 @@ import (
 
 var JwtSecret = []byte("your_secret")
 
-var AccessTokenTTL = time.Hour * 2
+var AccessTokenTTL = time.Hour * 1
 func GenerateAccessToken(userID string) (string, error) {
     claims := jwt.MapClaims{
         "user_id": userID,

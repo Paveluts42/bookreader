@@ -35,10 +35,15 @@ type Note struct {
 	Text   string
 	UserID uuid.UUID `gorm:"type:uuid"`
 }
-
-
+type Bookmark struct {
+	ID     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	BookID uuid.UUID `gorm:"type:uuid"`
+	UserID uuid.UUID `gorm:"type:uuid"`
+	Page   int32
+	Note   string
+}
 
 func AutoMigrate(DB *gorm.DB) {
 	DB.Exec(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`)
-	DB.AutoMigrate(&User{}, &Book{}, &Note{})
+	DB.AutoMigrate(&User{}, &Book{}, &Note{}, &Bookmark{})
 }

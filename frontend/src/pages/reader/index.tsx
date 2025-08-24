@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { bookClient, noteClient } from "../../connect";
+import { bookClient, bookmarkClient, noteClient } from "../../connect";
 import {
   Typography,
   Paper,
@@ -24,12 +24,11 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
-
 export default function ReaderPage() {
   const { bookId } = useParams<{ bookId: string }>();
   const [book, setBook] = useState<any>(null);
   const [numPages, setNumPages] = useState<number>(0);
-  const [pageNumber, setPageNumber] = useState<number>(book?.page || 1);
+  const [pageNumber, setPageNumber] = useState<number>(1);
   const [contextMenu, setContextMenu] = useState<{
     mouseX: number;
     mouseY: number;
@@ -42,6 +41,11 @@ export default function ReaderPage() {
     page: number;
   }>({ open: false, text: "", page: 1 });
   const [noteInput, setNoteInput] = useState("");
+  const [inputPage, setInputPage] = useState<number | string>("");
+  const [notes, setNotes] = useState<any[]>([]);
+  const [bookmarks, setBookmarks] = useState<any[]>([]);
+  const [showNotes, setShowNotes] = useState(false);
+
   const goToPrevPage = () => {
     setPageNumber((prev) => Math.max(prev - 1, 1));
   };
@@ -53,10 +57,9 @@ export default function ReaderPage() {
       return nextPage;
     });
   };
-  const [inputPage, setInputPage] = useState<number | string>("");
-  const [notes, setNotes] = useState<any[]>([]);
+
   useEffect(() => {
-    setInputPage(pageNumber); // Sync input with current page
+    setInputPage(pageNumber);
   }, [pageNumber]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,12 +73,12 @@ export default function ReaderPage() {
     setPageNumber(page);
     bookClient.updateBookPage({ bookId, page });
   };
+
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       (e.target as HTMLInputElement).blur();
     }
   };
-  const [showNotes, setShowNotes] = useState(false);
 
   const handleToggleNotes = () => setShowNotes((prev) => !prev);
 
@@ -83,8 +86,10 @@ export default function ReaderPage() {
     const fetchBook = async () => {
       const res = await bookClient.getBook({ bookId });
       setBook(res.book);
-      const notes = await noteClient.getNotes({ bookId });
-      setNotes(notes.notes || []);
+      const notesRes = await noteClient.getNotes({ bookId });
+      setNotes(notesRes.notes || []);
+      const bookmarksRes = await bookmarkClient.getBookmarks({ bookId });
+      setBookmarks(bookmarksRes.bookmarks || []);
       const initialPage =
         res.book && typeof res.book.page === "number" && res.book.page > 0
           ? res.book.page
@@ -122,6 +127,17 @@ export default function ReaderPage() {
       });
     }
   };
+
+  const handleAddBookmark = async () => {
+    await bookmarkClient.addBookmark({
+      bookId,
+      page: pageNumber,
+      note: "",
+    });
+    const bookmarksRes = await bookmarkClient.getBookmarks({ bookId });
+    setBookmarks(bookmarksRes.bookmarks || []);
+  };
+
   return (
     <Box sx={{ display: "flex", gap: 3, mt: 3 }}>
       {/* Left: PDF Reader */}
@@ -132,7 +148,7 @@ export default function ReaderPage() {
           </Typography>
           <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
             <IconButton onClick={handleToggleNotes}>
-              {showNotes ? "Скрыть заметки" : "Открыть заметки"}
+              {showNotes ? "Скрыть меню" : "Открыть меню"}
             </IconButton>
           </Stack>
         </Box>
@@ -221,7 +237,6 @@ export default function ReaderPage() {
         <Stack direction="row" justifyContent="center" sx={{ mt: 2 }}>
           <TextField
             fullWidth
-            // type="number"
             label="Перейти к странице"
             value={inputPage}
             onChange={handleInputChange}
@@ -246,6 +261,9 @@ export default function ReaderPage() {
               },
             }}
           />
+          <Button variant="outlined" onClick={handleAddBookmark} sx={{ ml: 2 }}>
+            Добавить закладку
+          </Button>
         </Stack>
 
         <Menu
@@ -265,6 +283,8 @@ export default function ReaderPage() {
                 page: contextMenu!.page,
                 text: contextMenu!.text,
               });
+              const notesRes = await noteClient.getNotes({ bookId });
+              setNotes(notesRes.notes || []);
               setContextMenu(null);
             }}
           >
@@ -307,10 +327,10 @@ export default function ReaderPage() {
                   page: noteDialog.page,
                   text: noteInput || noteDialog.text,
                 });
-                await noteClient.getNotes({ bookId });
+                const notesRes = await noteClient.getNotes({ bookId });
+                setNotes(notesRes.notes || []);
                 setNoteDialog({ ...noteDialog, open: false });
                 setNoteInput("");
-                // Refresh book/notes
                 const res = await bookClient.getBook({ bookId });
                 setBook(res.book);
               }}
@@ -322,7 +342,7 @@ export default function ReaderPage() {
           </DialogActions>
         </Dialog>
       </Paper>
-      {/* Right: Notes List */}
+      {/* Right: Notes & Bookmarks List */}
       {showNotes && (
         <Paper
           sx={{ flex: 3, p: 3, minWidth: 0, height: 900, overflow: "auto" }}
@@ -353,6 +373,36 @@ export default function ReaderPage() {
             ))
           ) : (
             <Typography color="text.secondary">Нет заметок</Typography>
+          )}
+
+          <Typography variant="h5" gutterBottom sx={{ mt: 4 }}>
+            Закладки
+          </Typography>
+          {bookmarks.length > 0 ? (
+            bookmarks.map((bm) => (
+              <Paper
+                key={bm.id}
+                onClick={() => {
+                  setPageNumber(bm.page);
+                  setInputPage(bm.page);
+                }}
+                sx={{
+                  p: 2,
+                  mb: 2,
+                  cursor: "pointer",
+                  "&:hover": { backgroundColor: "action.hover" },
+                }}
+              >
+                <Typography variant="body2" color="text.secondary">
+                  Страница: {bm.page}
+                </Typography>
+                {bm.note && (
+                  <Typography variant="body1">{bm.note}</Typography>
+                )}
+              </Paper>
+            ))
+          ) : (
+            <Typography color="text.secondary">Нет закладок</Typography>
           )}
         </Paper>
       )}

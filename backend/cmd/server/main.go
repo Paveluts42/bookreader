@@ -19,10 +19,12 @@ func main() {
 	bookPath, bookHandler := apiconnect.NewBookServiceHandler(server)
 	notePath, noteHandler := apiconnect.NewNoteServiceHandler(server)
 	userPath, userHandler := apiconnect.NewUserServiceHandler(server)
+	bookmarkPath, bookmarkHandler := apiconnect.NewBookmarkServiceHandler(server)
 
 	mux.Handle(bookPath, bookHandler)
 	mux.Handle(notePath, noteHandler)
 	mux.Handle(userPath, userHandler)
+	mux.Handle(bookmarkPath, bookmarkHandler)
 	mux.Handle("/uploads/", corsmw.WithCORS(http.StripPrefix("/uploads/", http.FileServer(http.Dir("/uploads")))))
 	// Add CORS middleware
 	handlerWithCORS := corsmw.WithCORS(mux)

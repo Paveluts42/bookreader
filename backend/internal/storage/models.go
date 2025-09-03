@@ -22,6 +22,7 @@ type Book struct {
 	Author    string
 	CoverPath string
 	CreatedAt time.Time
+	AudioPath string
     Page     int32     `json:"page"`     
     PageAll  int32     `json:"pageAll"`
 	UserID    uuid.UUID `gorm:"type:uuid"`

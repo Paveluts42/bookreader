@@ -143,6 +143,7 @@ export default function BooksList() {
                       ? `Дата добавления: ${b.createdAt}`
                       : "Дата добавления: —"}
                   </Typography>
+                  <br />
                   <Typography variant="caption" color="text.secondary">
                     {typeof b.page === "number" && typeof b.pageAll === "number"
                       ? `Страница: ${b.page} / ${b.pageAll}`

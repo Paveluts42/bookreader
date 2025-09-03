@@ -14,7 +14,8 @@ Thumbs.db
 *.dylib
 *.test
 *.out
-
+*/backend
+*/tts-server
 
 
 # директории зависимостей
@@ -51,7 +52,6 @@ coverage/
 # Docker ignores
 docker-compose.override.yml
 .env
-**/Dockerfile.*
 **/.dockerignore
 **/.env
 

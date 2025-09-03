@@ -1,14 +1,14 @@
 package delivery
 
 import (
-    "context"
-    "errors"
-    "log"
+	"context"
+	"errors"
+	"log"
 
-    "connectrpc.com/connect"
-    "github.com/Paveluts42/bookreader/backend/api"
-    "github.com/Paveluts42/bookreader/backend/internal/shared"
-    "github.com/Paveluts42/bookreader/backend/internal/storage"
+	"connectrpc.com/connect"
+	"github.com/Paveluts42/bookreader/backend/api"
+	"github.com/Paveluts42/bookreader/backend/internal/shared"
+	"github.com/Paveluts42/bookreader/backend/internal/storage"
 )
 
 func (s *Server) UploadPDF(
@@ -26,24 +26,20 @@ func (s *Server) UploadPDF(
     title := req.Msg.Title
     author := req.Msg.Author
     bookID := req.Msg.BookId
-    filePath := "/uploads/" + bookID + ".pdf"
-    coverPath := "/uploads/" + bookID + ".png"
 
-    if err := shared.GenerateCover(filePath, coverPath); err != nil {
-        log.Printf("Failed to generate cover: %v", err)
-    }
-    pageCount, err := shared.GetPDFPageCount(filePath)
+    pageCount, err := shared.GetPDFPageCountFromBytes(req.Msg.Chunk)
     if err != nil {
         log.Printf("Failed to get page count: %v", err)
         pageCount = 0
     }
 
     uploadService := storage.NewUploadService()
-    _, err = uploadService.SavePDF(bookID, title, author, userID, req.Msg.Chunk, pageCount, filePath, coverPath)
+    _, err = uploadService.SavePDF(bookID, title, author, userID, req.Msg.Chunk, pageCount, "", "")
     if err != nil {
         log.Printf("Failed to save book: %v", err)
         return nil, connect.NewError(connect.CodeInternal, err)
     }
+
     resp := &api.UploadResponse{BookId: bookID, Ok: true}
     return connect.NewResponse(resp), nil
 }

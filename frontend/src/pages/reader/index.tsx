@@ -24,6 +24,7 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+
 export default function ReaderPage() {
   const { bookId } = useParams<{ bookId: string }>();
   const [book, setBook] = useState<any>(null);
@@ -140,36 +141,37 @@ export default function ReaderPage() {
 
   return (
     <Box sx={{ display: "flex", gap: 3, mt: 3 }}>
-      {/* Left: PDF Reader */}
       <Paper sx={{ flex: 7, p: 3, minWidth: 0 }}>
-        <Box display={"flex"} justifyContent="space-between" mb={2}>
-          <Typography variant="h4" gutterBottom>
-            {book.title}
-          </Typography>
-          <Stack direction="row" justifyContent="flex-end" sx={{ mt: 2 }}>
-            <IconButton onClick={handleToggleNotes}>
+       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Box>
+            <Typography variant="h4" gutterBottom>
+              {book.title}
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              Автор: {book.author}
+            </Typography>
+            <Typography variant="subtitle2" gutterBottom>
+              Дата добавления:{" "}
+              {book.createdAt && new Date(book.createdAt).toLocaleString()}
+            </Typography>
+          </Box>
+          <Box>
+            <Button onClick={handleToggleNotes} variant="text">
               {showNotes ? "Скрыть меню" : "Открыть меню"}
-            </IconButton>
-          </Stack>
+            </Button>
+          </Box>
         </Box>
 
-        <Typography variant="subtitle1" gutterBottom>
-          Автор: {book.author}
-        </Typography>
-        <Typography variant="subtitle2" gutterBottom>
-          Дата добавления:{" "}
-          {book.createdAt && new Date(book.createdAt).toLocaleString()}
-        </Typography>
-
-        <Box
+         <Box
           sx={{
             mt: 4,
             height: 800,
-            overflow: "auto",
-            scrollBehavior: "smooth",
             display: "flex",
             justifyContent: "center",
-            alignItems: "flex-start",
+            alignItems: "center",
+            overflow: "hidden", // убирает скролл
+            background: "#222",
+            borderRadius: 2,
           }}
           onContextMenu={handlePdfContextMenu}
         >

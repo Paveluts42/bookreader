@@ -14,6 +14,7 @@ services:
 
 
   backend:
+    user: "${UID}:${GID}"
     build:
       context: ./backend
       dockerfile: Dockerfile.backend
@@ -23,9 +24,24 @@ services:
       - "50051:50051"
     depends_on:
       - postgres
+      - tts
     volumes:
       - ./uploads:/uploads:z
     environment:
       DATABASE_URL: "postgres://reader:readerpass@postgres:5432/readerdb"
+      TTS_URL: "http://tts:8080/say"
+      HOME: "/app"
+
+# TODO :нужно убрать логи 
+  tts:
+    user: "${UID}:${GID}"
+    image: aculeasis/rhvoice-rest:latest
+    ports:
+      - "8083:8080"
+    environment:
+      RHVOICE_DEFAULT_VOICE: "anna"
+      RHVOICE_DEFAULT_LANGUAGE: "ru"
+    
 volumes:
   pgdata:
+

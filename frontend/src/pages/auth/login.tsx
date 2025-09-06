@@ -34,10 +34,15 @@ export default function LoginPage() {
       setError("Ошибка входа");
     }
   };
-
+const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleLogin();
+  };
   return (
     <Paper sx={{ p: 4, maxWidth: 400, mx: "auto", mt: 20 }}>
       <Typography variant="h5" gutterBottom>Вход</Typography>
+            <form onSubmit={handleSubmit}>
+
       <TextField
         label="Имя пользователя"
         fullWidth
@@ -51,6 +56,9 @@ export default function LoginPage() {
         fullWidth
         margin="normal"
         value={password}
+           onKeyDown={e => {
+          if (e.key === "Enter") handleLogin();
+        }}
         onChange={e => setPassword(e.target.value)}
       />
       {error && <Typography color="error">{error}</Typography>}
@@ -60,6 +68,7 @@ export default function LoginPage() {
       <Button fullWidth sx={{ mt: 1 }} onClick={() => navigate("/register")}>
         Регистрация
       </Button>
+      </form>
     </Paper>
   );
 }

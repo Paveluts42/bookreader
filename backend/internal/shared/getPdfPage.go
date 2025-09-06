@@ -1,14 +1,15 @@
 package shared
 
 import (
-    "bytes"
-    "github.com/pdfcpu/pdfcpu/pkg/api"
+	"bytes"
+
+    "rsc.io/pdf"
 )
 
 func GetPDFPageCountFromBytes(pdfData []byte) (int, error) {
-    ctx, err := api.ReadContext(bytes.NewReader(pdfData), nil)
+    r, err := pdf.NewReader(bytes.NewReader(pdfData), int64(len(pdfData)))
     if err != nil {
         return 0, err
     }
-    return ctx.PageCount, nil
+    return r.NumPage(), nil
 }

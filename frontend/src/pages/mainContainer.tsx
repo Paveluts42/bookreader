@@ -15,26 +15,25 @@ import { useAuthStore } from "../store/auth";
 import { useEffect } from "react";
 import { userClient } from "../connect";
 import AdminUsersPage from "./users";
+import AudioBooksPage from "./audio";
 
 const MainContainer = () => {
-  const { user,setUser, logout } = useAuthStore();
-
+  const { user, setUser, logout } = useAuthStore();
 
   const fetchUser = async () => {
     const userId = localStorage.getItem("user");
     if (userId) {
       try {
-       const userRes= await userClient.getUser( { userId: userId } ); 
-         setUser(userRes);
+        const userRes = await userClient.getUser({ userId: userId });
+        setUser(userRes);
       } catch (error) {
         console.error("Error fetching user:", error);
       }
     }
   };
-    useEffect(() => {
-          fetchUser();
-    }, []);
-
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   return (
     <>
@@ -47,7 +46,10 @@ const MainContainer = () => {
             <Button color="inherit" component={Link} to="/upload">
               Загрузить книгу
             </Button>
-               {user?.isAdmin && (
+            <Button color="inherit" component={Link} to="/audio">
+              Аудиокниги
+            </Button>
+            {user?.isAdmin && (
               <Button color="inherit" component={Link} to="/admin/users">
                 Пользователи
               </Button>
@@ -91,7 +93,9 @@ const MainContainer = () => {
           <Route path="/" element={<BooksList />} />
           <Route path="/upload" element={<UploadBookForm />} />
           <Route path="/reader/:bookId" element={<ReaderPage />} />
-                {user?.isAdmin && (
+          <Route path="/audio" element={<AudioBooksPage />} />
+
+          {user?.isAdmin && (
             <Route path="/admin/users" element={<AdminUsersPage />} />
           )}
         </Routes>

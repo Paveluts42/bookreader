@@ -22,9 +22,14 @@ export default function RegisterPage() {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleRegister();
+  };
   return (
     <Paper sx={{ p: 4, maxWidth: 400, mx: "auto", mt: 20 }}>
       <Typography variant="h5" gutterBottom>Регистрация</Typography>
+      <form onSubmit={handleSubmit}>
       <TextField
         label="Имя пользователя"
         fullWidth
@@ -39,14 +44,16 @@ export default function RegisterPage() {
         margin="normal"
         value={password}
         onChange={e => setPassword(e.target.value)}
+       
       />
       {error && <Typography color="error">{error}</Typography>}
-      <Button variant="contained" fullWidth sx={{ mt: 2 }} onClick={handleRegister}>
+      <Button variant="contained" fullWidth sx={{ mt: 2 }}  onClick={handleRegister}>
         Зарегистрироваться
       </Button>
       <Button fullWidth sx={{ mt: 1 }} onClick={() => navigate("/login")}>
         Уже есть аккаунт? Войти
       </Button>
+      </form>
     </Paper>
   );
 }

@@ -6,9 +6,9 @@ import (
 	"log"
 
 	"connectrpc.com/connect"
-	"github.com/Paveluts42/bookreader/backend/api"
-	"github.com/Paveluts42/bookreader/backend/internal/shared"
-	"github.com/Paveluts42/bookreader/backend/internal/storage"
+    "github.com/Paveluts42/bookreader/backend/api"
+    "github.com/Paveluts42/bookreader/backend/internal/shared"
+    "github.com/Paveluts42/bookreader/backend/internal/storage"
 )
 
 func (s *Server) UploadPDF(
@@ -19,6 +19,13 @@ func (s *Server) UploadPDF(
     if err != nil || userID == "" {
         return nil, connect.NewError(connect.CodePermissionDenied, errors.New("forbidden"))
     }
+    var user storage.User
+    err = storage.DB.Where("id = ?", userID).First(&user).Error
+    if err != nil || user.Username == "" {
+        log.Printf("Failed to get username for userID %s: %v", userID, err)
+        return nil, connect.NewError(connect.CodePermissionDenied, errors.New("user not found"))
+    }
+    username := user.Username
     if req.Msg.BookId == "" || len(req.Msg.Chunk) == 0 {
         log.Println("Invalid upload request")
         return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("invalid upload request"))
@@ -28,13 +35,14 @@ func (s *Server) UploadPDF(
     bookID := req.Msg.BookId
 
     pageCount, err := shared.GetPDFPageCountFromBytes(req.Msg.Chunk)
+    println("Detected page count:", pageCount)
     if err != nil {
         log.Printf("Failed to get page count: %v", err)
-        pageCount = 0
+        pageCount = 10
     }
 
     uploadService := storage.NewUploadService()
-    _, err = uploadService.SavePDF(bookID, title, author, userID, req.Msg.Chunk, pageCount, "", "")
+    _, err = uploadService.SavePDF(bookID, title, author, userID, username, req.Msg.Chunk, pageCount, "", "")
     if err != nil {
         log.Printf("Failed to save book: %v", err)
         return nil, connect.NewError(connect.CodeInternal, err)

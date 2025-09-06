@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { bookClient, bookmarkClient, noteClient } from "../../connect";
 import {
@@ -47,8 +47,15 @@ export default function ReaderPage() {
   const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [showNotes, setShowNotes] = useState(false);
 
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [autoListening, setAutoListening] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const goToPrevPage = () => {
     setPageNumber((prev) => Math.max(prev - 1, 1));
+    setAutoListening(false);
+    clearTimeout(timeoutRef.current as NodeJS.Timeout);
   };
 
   const goToNextPage = () => {
@@ -57,6 +64,8 @@ export default function ReaderPage() {
       bookClient.updateBookPage({ bookId, page: nextPage });
       return nextPage;
     });
+    setAutoListening(false);
+    clearTimeout(timeoutRef.current as NodeJS.Timeout);
   };
 
   useEffect(() => {
@@ -67,12 +76,88 @@ export default function ReaderPage() {
     setInputPage(e.target.value.replace(/[^0-9]/g, ""));
   };
 
+  const checkAudioExists = async (url: string) => {
+    try {
+      const res = await fetch(url);
+      return res.ok;
+    } catch {
+      return false;
+    }
+  };
+
+  // Основная функция для автопрослушивания
+  const playOrSkipAudio = async (page: number) => {
+    if (!book || !book.audioPath) return;
+    let audioBase = book.audioPath.replace(/\/full\.mp3$/, "");
+    const url = `http://localhost:50051${audioBase}/pages/page_${page}.mp3`;
+    const exists = await checkAudioExists(url);
+    if (exists) {
+      setAudioUrl(url);
+      setIsPlaying(true);
+    } else {
+      setAudioUrl(null);
+      setIsPlaying(false);
+      if (autoListening && page < numPages) {
+        timeoutRef.current = setTimeout(() => {
+          setPageNumber(page + 1);
+          setInputPage(page + 1);
+        }, 2000);
+      } else {
+        setAutoListening(false);
+      }
+    }
+  };
+
+  // useEffect для автопрослушивания при смене страницы
+  useEffect(() => {
+    if (autoListening) {
+      playOrSkipAudio(pageNumber);
+    } else {
+      setAudioUrl(null);
+      setIsPlaying(false);
+    }
+    // eslint-disable-next-line
+  }, [pageNumber, autoListening, book]);
+
+  // Очищаем таймер при размонтировании или смене страницы
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  // Кнопка "слушать" - старт/стоп
+  const handleListenPage = () => {
+    if (autoListening) {
+      setAutoListening(false);
+      setAudioUrl(null);
+      setIsPlaying(false);
+      clearTimeout(timeoutRef.current as NodeJS.Timeout);
+    } else {
+      setAutoListening(true);
+      playOrSkipAudio(pageNumber);
+    }
+  };
+
+  const handleAudioEnded = () => {
+    if (autoListening && pageNumber < numPages) {
+      setPageNumber(pageNumber + 1);
+      setInputPage(pageNumber + 1);
+    } else {
+      setIsPlaying(false);
+      setAudioUrl(null);
+      setAutoListening(false);
+    }
+  };
+
   const handleInputBlur = () => {
     let page = Number(inputPage);
     if (isNaN(page) || page < 1) page = 1;
     if (page > numPages) page = numPages;
     setPageNumber(page);
     bookClient.updateBookPage({ bookId, page });
+    setAutoListening(false);
+    clearTimeout(timeoutRef.current as NodeJS.Timeout);
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -111,7 +196,8 @@ export default function ReaderPage() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goToPrevPage, goToNextPage]);
+    // eslint-disable-next-line
+  }, []);
 
   if (!book) return <Typography>Загрузка...</Typography>;
 
@@ -142,7 +228,12 @@ export default function ReaderPage() {
   return (
     <Box sx={{ display: "flex", gap: 3, mt: 3 }}>
       <Paper sx={{ flex: 7, p: 3, minWidth: 0 }}>
-       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          mb={2}
+        >
           <Box>
             <Typography variant="h4" gutterBottom>
               {book.title}
@@ -162,14 +253,14 @@ export default function ReaderPage() {
           </Box>
         </Box>
 
-         <Box
+        <Box
           sx={{
             mt: 4,
             height: 800,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            overflow: "hidden", // убирает скролл
+            overflow: "hidden",
             background: "#222",
             borderRadius: 2,
           }}
@@ -267,6 +358,27 @@ export default function ReaderPage() {
             Добавить закладку
           </Button>
         </Stack>
+        <Stack direction="row" justifyContent="center" sx={{ mt: 2 }}>
+          <IconButton
+            onClick={handleListenPage}
+            aria-label="listen"
+            size="large"
+            color={autoListening ? "primary" : "default"}
+          >
+            <span role="img" aria-label="listen">
+              🔊
+            </span>
+          </IconButton>
+          {audioUrl && autoListening && (
+            <audio
+              src={audioUrl}
+              autoPlay
+              controls
+              style={{ width: "100%", marginTop: 16 }}
+              onEnded={handleAudioEnded}
+            />
+          )}
+        </Stack>
 
         <Menu
           open={!!contextMenu}
@@ -359,6 +471,8 @@ export default function ReaderPage() {
                 onClick={() => {
                   setPageNumber(note.page);
                   setInputPage(note.page);
+                  setAutoListening(false);
+                  clearTimeout(timeoutRef.current as NodeJS.Timeout);
                 }}
                 sx={{
                   p: 2,
@@ -387,6 +501,8 @@ export default function ReaderPage() {
                 onClick={() => {
                   setPageNumber(bm.page);
                   setInputPage(bm.page);
+                  setAutoListening(false);
+                  clearTimeout(timeoutRef.current as NodeJS.Timeout);
                 }}
                 sx={{
                   p: 2,
@@ -398,9 +514,7 @@ export default function ReaderPage() {
                 <Typography variant="body2" color="text.secondary">
                   Страница: {bm.page}
                 </Typography>
-                {bm.note && (
-                  <Typography variant="body1">{bm.note}</Typography>
-                )}
+                {bm.note && <Typography variant="body1">{bm.note}</Typography>}
               </Paper>
             ))
           ) : (

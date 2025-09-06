@@ -1,7 +1,6 @@
 package storage
 
 import (
-    "log"
     "os"
 
     "gorm.io/gorm"
@@ -64,19 +63,16 @@ func (s *BookService) DeleteBookWithData(bookID string) error {
         if err := tx.First(&book, "id = ?", bookID).Error; err != nil {
             return err
         }
+        var user User
+        if err := tx.First(&user, "id = ?", book.UserID).Error; err != nil {
+            return err
+        }
+        bookDir := "/uploads/" + user.Username + "/" + bookID
+        os.RemoveAll(bookDir)
         if err := tx.Delete(&Book{}, "id = ?", bookID).Error; err != nil {
             return err
         }
-        if book.FilePath != "" {
-            if err := os.Remove(book.FilePath); err != nil && !os.IsNotExist(err) {
-                log.Printf("Failed to delete PDF file %s: %v", book.FilePath, err)
-            }
-        }
-        if book.CoverPath != "" {
-            if err := os.Remove(book.CoverPath); err != nil && !os.IsNotExist(err) {
-                log.Printf("Failed to delete PNG file %s: %v", book.CoverPath, err)
-            }
-        }
+
         return nil
     })
 }

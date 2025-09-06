@@ -51,9 +51,7 @@ coverage/
 # ===== Docker =====
 # Docker ignores
 docker-compose.override.yml
-.env
 **/.dockerignore
-**/.env
 
 # ===== Migration и Build =====
 # если создаются миграции или файлы сборки

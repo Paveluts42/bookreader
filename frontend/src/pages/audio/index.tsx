@@ -39,7 +39,7 @@ const AudioBooksPage = () => {
               {book.coverUrl && (
                 <Avatar
                   variant="square"
-                  src={`http://localhost:50051${book.coverUrl}`}
+                  src={`/api${book.coverUrl}`}
                   alt={book.title}
                   sx={{ width: 64, height: 90, mr: 2 }}
                 />
@@ -50,7 +50,7 @@ const AudioBooksPage = () => {
               <Box sx={{ mt: 1 }}>
                 <audio
                   controls
-                  src={`http://localhost:50051${book.audioPath}`}
+                  src={`/api${book.audioPath}`}
                   style={{ width: "100%" }}
                 />
 

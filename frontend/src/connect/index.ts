@@ -8,7 +8,7 @@ import { BookmarkService } from "../api/bookmarks_pb";
 let isRefreshing = false;
 
 const transport = createGrpcWebTransport({
-  baseUrl: "http://127.0.0.1:50051",
+  baseUrl: "/api",
   useBinaryFormat: false,
   interceptors: [
     (next) => async (req) => {

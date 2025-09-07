@@ -32,7 +32,15 @@ services:
       TTS_URL: "http://tts:8080/say"
       HOME: "/app"
 
-# TODO :нужно убрать логи 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"     
+    depends_on:
+      - backend
+
   tts:
     user: "${UID}:${GID}"
     image: aculeasis/rhvoice-rest:latest

@@ -89,7 +89,7 @@ export default function ReaderPage() {
   const playOrSkipAudio = async (page: number) => {
     if (!book || !book.audioPath) return;
     let audioBase = book.audioPath.replace(/\/full\.mp3$/, "");
-    const url = `http://localhost:50051${audioBase}/pages/page_${page}.mp3`;
+    const url = `/api${audioBase}/pages/page_${page}.mp3`;
     const exists = await checkAudioExists(url);
     if (exists) {
       setAudioUrl(url);
@@ -267,7 +267,7 @@ export default function ReaderPage() {
           onContextMenu={handlePdfContextMenu}
         >
           <Document
-            file={`http://localhost:50051${
+            file={`/api${
               book.filePath.startsWith("/")
                 ? book.filePath
                 : "/" + book.filePath

@@ -1,4 +1,9 @@
 {
+  "compilerOptions": {
+    "types": ["node"],
+    "noUnusedLocals": false, // <--- добавь эту строку
+    "noUnusedParameters": false // <--- можно добавить для параметров
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

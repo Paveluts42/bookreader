@@ -112,7 +112,7 @@ export default function BooksList() {
                   height="220"
                   image={
                     b.coverUrl
-                      ? `http://localhost:50051${
+                      ? `/api${
                           b.coverUrl.startsWith("/")
                             ? b.coverUrl
                             : "/" + b.coverUrl
